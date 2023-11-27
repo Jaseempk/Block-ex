@@ -66,5 +66,8 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     function getTokenId(uint256 tokenIndex)public view returns(uint256){
         return tokenCounters[tokenIndex];
     }
+    function getNumNFTs()public pure returns(uint526){
+        return tokenCounters.length;
+    }
 
 }
