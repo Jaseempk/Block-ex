@@ -34,7 +34,6 @@ interface IFakeNFTMarketPlace{
 
 contract BlockEx is ERC721{
 
-
     //Structs
     struct TxnData{
         uint256 tokenId;
