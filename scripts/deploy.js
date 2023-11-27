@@ -1,34 +1,33 @@
-const hre=require("hardhat");
+const hre = require("hardhat");
 
-async function sleep(ms){
-    await new Promise((resolve)=>(resolve,ms))
+async function sleep(ms) {
+    await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function main() {
+    const fakeNFTMarket = await hre.ethers.deployContract("FakeNFTMarketPlace");
+    await fakeNFTMarket.deployed();
+    console.log("FakeNFTMarketPlace deployed at:", fakeNFTMarket.address);
 
-async function main(){
+    const blockEx = await hre.ethers.deployContract("BlockEx", [fakeNFTMarket.address]);
+    await blockEx.deployed();
+    console.log("Block-Ex deployed at:", blockEx.address);
 
-    const fakeNFTMarket=await hre.ethers.deployContract("FakeNFTMarketPlace");
-    await fakeNFTMarket.waitForDeployment();
-    console.log("FakeNFTMarketPlace deployed at:",fakeNFTMarket.target)
+    await sleep(5000);
 
-    const blockEx=await hre.ethers.deployContract("BlockEx",[fakeNFTMarket.target]);
-    await blockEx.waitForDeployment()
-    console.log("Block-Ex deployed at:",blockEx.target)
+    // verifying contracts
+    await hre.run("verify:verify", {
+        address: fakeNFTMarket.address,
+        constructorArguments: [],
+    });
 
-    await sleep(5000)
-
-    //verifying contracts
-    await hre.run("verify:verify",{
-        address:fakeNFTMarket.target,
-        constructorArguments:[]
-    })
-
-    await hre.run("verify:verify",{
-        address:blockEx.target,
-        constructorArguments:[fakeNFTMarket.target]
-    })
+    await hre.run("verify:verify", {
+        address: blockEx.address,
+        constructorArguments: [fakeNFTMarket.address],
+    });
 }
-main().catch((e)=>{
+
+main().catch((e) => {
     console.error(e);
-    process.exit=1;
-  })
+    process.exit(1);
+});

@@ -104,7 +104,7 @@ contract BlockEx is ERC721{
 
     }
     //To access all the transaction datas happened sofar
-    function getAllDatas()public returns(TxnData[] memory){
+    function getAllDatas()public view returns(TxnData[] memory){
 
         //array of type TxnData which contains all TxnDatas
         TxnData[] memory txnDatas=new TxnData[](purchaseCount);
