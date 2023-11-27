@@ -29,6 +29,7 @@ interface IFakeNFTMarketPlace{
     function purchase(uint256 _tokenId)external payable{}
     function available(uint256 tokenId)public pure returns(bool){}
     function getTokenId(uint256 tokenIndex)public pure returns(uint256){}
+    function getPrice()public pure returns(uint256){}
     function getNumNFTs()public pure returns(uint256){}
 }
 
@@ -71,24 +72,24 @@ contract BlockEx is ERC721{
         uint256 initialPurchaseAmt=marketPlace.getPrice();
 
         require(msg.value>=initialPurchaseAmt,"insufficient purchase amount");
-        require(marketPlace.tokenIdExists(_tokenId),"NFT doesn't exist");
+        require(marketPlace.available(_tokenId),"NFT doesn't exist");
         marketPlace.purchase{value:initialPurchaseAmt}(_tokenId);
         purchaseCount+=1;
 
         emit InitialNFTPurchaseDone(msg.sender,_tokenId);
     }
 
-    function listingForSale(uint256 _tokenId,uint256 price)external {
+    function listingForSale(uint256 _tokenId,uint256 _price)external {
 
         require(msg.value>=tradeFee,"No trading fee,no listing!!");
         //Ensuring if the given tokenId is valid
-        require(marketPlace.tokenIdExists(_tokenId),"This NFT doesn't exist");
+        require(marketPlace.available(_tokenId),"This NFT doesn't exist");
 
         idToData[_tokenId]=TxnData{
             _tokenId,
             payable(address(this)),
             msg.sender,
-            price
+            _price
         }
         //transfering the NFT for sale into the exchange contract from the seller
         _transfer(msg.sender,address(this),_tokenId);
@@ -97,7 +98,7 @@ contract BlockEx is ERC721{
             _tokenId,
             payable(address(this)),
             msg.sender,
-            price
+            _price
         );
 
     }
