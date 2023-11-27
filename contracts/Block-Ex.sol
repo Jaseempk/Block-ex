@@ -27,10 +27,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 interface IFakeNFTMarketPlace{
     function purchase(uint256 _tokenId)external payable{}
-    function available(uint256 tokenId)public pure returns(bool){}
-    function getTokenId(uint256 tokenIndex)public pure returns(uint256){}
-    function getPrice()public pure returns(uint256){}
-    function getNumNFTs()public pure returns(uint256){}
+    function available(uint256 tokenId)public pure returns(bool);
+    function getTokenId(uint256 tokenIndex)public pure returns(uint256);
+    function getPrice()public pure returns(uint256);
+    function getNumNFTs()public pure returns(uint256);
 }
 
 contract BlockEx is ERC721{
@@ -63,7 +63,7 @@ contract BlockEx is ERC721{
         uint256 price
     );
 
-    constructor(IFakeNFTMarketPlace _fakeNFTMarketPlace){
+    constructor(IFakeNFTMarketPlace _fakeNFTMarketPlace)ERC721("",""){
         marketPlace=IFakeNFTMarketPlace(_fakeNFTMarketPlace);
         owner=payable(msg.sender);
     }
@@ -85,18 +85,19 @@ contract BlockEx is ERC721{
         //Ensuring if the given tokenId is valid
         require(marketPlace.available(_tokenId),"This NFT doesn't exist");
 
-        idToData[_tokenId]=TxnData{
+        idToData[_tokenId]=TxnData(
+
             _tokenId,
             payable(address(this)),
-            msg.sender,
+            payable(msg.sender),
             _price
-        }
+        );
         //transfering the NFT for sale into the exchange contract from the seller
         _transfer(msg.sender,address(this),_tokenId);
 
         emit ListedForSale(
             _tokenId,
-            payable(address(this)),
+            address(this),
             msg.sender,
             _price
         );
@@ -110,7 +111,6 @@ contract BlockEx is ERC721{
         uint256 currentId;
         uint256 currentIndex=0;
 
-        uint256 currentIndex=0;
         for(int i=0;i<idToData.length;i++){
             currentId=i+1;
             txnDatas[currentIndex]=idToData[currentId];
@@ -120,7 +120,7 @@ contract BlockEx is ERC721{
         return txnDatas;
     }
 
-    function getMyDatas() public returns(TxnData[]){
+    function getMyDatas() public returns(TxnData[] calldata){
         uint256 numNFTs=0;
         uint256 currentId;
         uint256 currentIndex=0;

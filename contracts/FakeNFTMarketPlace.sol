@@ -12,11 +12,11 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     uint256 public constant PRICE=0.01 ether;
     uint256[] public tokenCounters;
     bool public mintFinished=false;
-    address public owner;
 
     //mapping
     mapping(uint256 => bool)public tokenIdExists;
     mapping (uint256 => uint256) idToPrices;
+    mapping(uint256 => address)tokenIdToAdress;
 
     //modifiers
     modifier canMint{
@@ -41,7 +41,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
             _safeMint(address(this),tokenId);
 
             //sets URI in the given tokenId's metadata
-            _setTokenURI(tokenId,tokenURIs[i]);
+            //_setTokenURI(tokenId,tokenURIs[i]);
         }
     }
 
@@ -50,7 +50,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
         require(tokenIdExists[_tokenId],"NFT with this tokenId doesn't exist");
 
         tokenIdToAdress[_tokenId]=msg.sender;
-        (bool sent,)=payable(msg.sender).call{value:msg.value}("")
+        (bool sent,)=payable(msg.sender).call{value:msg.value}("");
         require(sent,"transfer failed");
         _safeTransfer(address(this),msg.sender,_tokenId);
     }
@@ -66,7 +66,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     function getTokenId(uint256 tokenIndex)public view returns(uint256){
         return tokenCounters[tokenIndex];
     }
-    function getNumNFTs()public pure returns(uint526){
+    function getNumNFTs()public pure returns(uint256){
         return tokenCounters.length;
     }
 
