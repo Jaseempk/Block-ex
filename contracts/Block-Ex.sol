@@ -26,11 +26,11 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 interface IFakeNFTMarketPlace{
-    function purchase(uint256 _tokenId)external payable{}
-    function available(uint256 tokenId)public pure returns(bool);
-    function getTokenId(uint256 tokenIndex)public pure returns(uint256);
-    function getPrice()public pure returns(uint256);
-    function getNumNFTs()public pure returns(uint256);
+    function available(uint256 tokenId)external pure returns(bool);
+    function getTokenId(uint256 tokenIndex)external pure returns(uint256);
+    function getPrice()external pure returns(uint256);
+    function getNumNFTs()external pure returns(uint256);
+    function purchase(uint256 _tokenId)external payable;
 }
 
 contract BlockEx is ERC721{
