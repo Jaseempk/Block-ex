@@ -26,7 +26,6 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
 
 
     constructor()ERC721("ALTD","ALT"){
-         owner=msg.sender;
     }
 
     function mintNFT(string[] memory tokenURIs)public onlyOwner canMint{
@@ -52,7 +51,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
         tokenIdToAdress[_tokenId]=msg.sender;
         (bool sent,)=payable(msg.sender).call{value:msg.value}("");
         require(sent,"transfer failed");
-        _safeTransfer(address(this),msg.sender,_tokenId);
+        _safeTransfer(address(this),msg.sender,_tokenId,"");
     }
 
     function available(uint256 _tokenId)public view returns(bool){
@@ -66,7 +65,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     function getTokenId(uint256 tokenIndex)public view returns(uint256){
         return tokenCounters[tokenIndex];
     }
-    function getNumNFTs()public pure returns(uint256){
+    function getNumNFTs()public view returns(uint256){
         return tokenCounters.length;
     }
 

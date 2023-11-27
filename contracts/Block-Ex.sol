@@ -79,7 +79,7 @@ contract BlockEx is ERC721{
         emit InitialNFTPurchaseDone(msg.sender,_tokenId);
     }
 
-    function listingForSale(uint256 _tokenId,uint256 _price)external {
+    function listingForSale(uint256 _tokenId,uint256 _price)external payable {
 
         require(msg.value>=tradeFee,"No trading fee,no listing!!");
         //Ensuring if the given tokenId is valid
@@ -111,7 +111,7 @@ contract BlockEx is ERC721{
         uint256 currentId;
         uint256 currentIndex=0;
 
-        for(int i=0;i<idToData.length;i++){
+        for(uint i=0;i<=purchaseCount;i++){
             currentId=i+1;
             txnDatas[currentIndex]=idToData[currentId];
             currentIndex+=1;
@@ -120,18 +120,18 @@ contract BlockEx is ERC721{
         return txnDatas;
     }
 
-    function getMyDatas() public returns(TxnData[] calldata){
+    function getMyDatas() public view returns(TxnData[] memory){
         uint256 numNFTs=0;
         uint256 currentId;
         uint256 currentIndex=0;
-        for(int i=0;i<idToData.length;i++){
+        for(uint i=0;i<=purchaseCount;i++){
             //Obtain the number of nfts the function caller owns
             if(idToData[i+1].owner==msg.sender || idToData[i+1].seller==msg.sender){
                 numNFTs+=1;
             }
         }
-        TxnData[] storage myNFTs=new TxnData[](numNFTs);
-        for(int i=0;i<idToData.length;i++){
+        TxnData[] memory myNFTs=new TxnData[](numNFTs);
+        for(uint i=0;i<=purchaseCount;i++){
             if(idToData[i+1].seller==msg.sender || idToData[i+1].owner==msg.sender){
                 currentId=i+1;
                 //NFTs owned by the msg.sender
@@ -141,7 +141,7 @@ contract BlockEx is ERC721{
         return myNFTs;
     }
     //selling of the listed NFTs
-    function executeSale(uint256 _tokenId)external {
+    function executeSale(uint256 _tokenId)external payable {
 
         uint256 price=idToData[_tokenId].price;
         address seller=idToData[_tokenId].seller;
