@@ -24,7 +24,6 @@
 
 pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 interface IFakeNFTMarketPlace{
     function purchase(uint256 _tokenId)external payable{}
@@ -35,7 +34,6 @@ interface IFakeNFTMarketPlace{
 
 contract BlockEx is ERC721{
 
-    using Counters for Counters.Counter; 
 
     //Structs
     struct TxnData{
