@@ -30,6 +30,7 @@ interface IFakeNFTMarketPlace{
     function getTokenId(uint256 tokenIndex)external pure returns(uint256);
     function getPrice()external pure returns(uint256);
     function getNumNFTs()external pure returns(uint256);
+    function getTokenOwner(uint256 _tokenId)external view returns(address);
     function purchase(uint256 _tokenId)external payable;
 }
 
@@ -80,8 +81,12 @@ contract BlockEx is ERC721{
     }
 
     function listingForSale(uint256 _tokenId,uint256 _price)external payable {
+        
+        //Checks whether the person listing the NFT is its actual owner
+        require(marketPlace.getTokenOwner(_tokenId)==msg.sender,"Only owner can list their NFTs");
 
         require(msg.value>=tradeFee,"No trading fee,no listing!!");
+
         //Ensuring if the given tokenId is valid
         require(marketPlace.available(_tokenId),"This NFT doesn't exist");
 
@@ -147,6 +152,7 @@ contract BlockEx is ERC721{
         address seller=idToData[_tokenId].seller;
         require(msg.value>=price,"insufficient trading fee");
 
+        //Re-assigning the buyer as the new seller of that particular NFT
         idToData[_tokenId].seller=payable(msg.sender);
 
 

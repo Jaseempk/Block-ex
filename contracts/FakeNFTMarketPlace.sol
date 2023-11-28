@@ -15,7 +15,6 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
 
     //mapping
     mapping(uint256 => bool)public tokenIdExists;
-    mapping (uint256 => uint256) idToPrices;
     mapping(uint256 => address)tokenIdToAdress;
 
     //modifiers
@@ -28,17 +27,17 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     constructor()ERC721("ALTD","ALT"){
     }
 
-    function mintNFT(string[] memory tokenURIs)public onlyOwner canMint{
-        for(uint i=0;i<tokenURIs.length;i++){
+    function mintNFT(uint256 numTokens)public onlyOwner canMint{
+        for(uint i=0;i<=numTokens;i++){
 
             uint256 tokenId=tokenCounters.length;
             tokenCounters.push(tokenId);
-            tokenIdExists[tokenId]=true;
             mintFinished=true;
 
             //mints NFT to this contract from which users can later purchase
             _safeMint(address(this),tokenId);
 
+            tokenIdExists[tokenId]=true;
             //sets URI in the given tokenId's metadata
             //_setTokenURI(tokenId,tokenURIs[i]);
         }
@@ -64,6 +63,9 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     }
     function getTokenId(uint256 tokenIndex)public view returns(uint256){
         return tokenCounters[tokenIndex];
+    }
+    function getTokenOwner(uint256 _tokenId)external view returns(address){
+        return tokenIdToAdress[_tokenId];
     }
     function getNumNFTs()public view returns(uint256){
         return tokenCounters.length;
