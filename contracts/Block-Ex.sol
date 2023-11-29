@@ -23,7 +23,6 @@
 //SPDX-License-Identifier:MIT
 
 pragma solidity ^0.8.19;
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 interface IFakeNFTMarketPlace{
     function available(uint256 tokenId)external pure returns(bool);
@@ -32,9 +31,11 @@ interface IFakeNFTMarketPlace{
     function getNumNFTs()external pure returns(uint256);
     function getTokenOwner(uint256 _tokenId)external view returns(address);
     function purchase(uint256 _tokenId,address _buyer)external payable;
+    function transferFrom(address from, address to, uint256 tokenId) external;
+    function approve(address to, uint256 tokenId) external;
 }
 
-contract BlockEx is ERC721{
+contract BlockEx {
 
     //Structs
     struct TxnData{
@@ -64,7 +65,7 @@ contract BlockEx is ERC721{
         uint256 price
     );
 
-    constructor(IFakeNFTMarketPlace _fakeNFTMarketPlace)ERC721("",""){
+    constructor(IFakeNFTMarketPlace _fakeNFTMarketPlace){
         marketPlace=IFakeNFTMarketPlace(_fakeNFTMarketPlace);
         owner=payable(msg.sender);
     }
@@ -98,7 +99,7 @@ contract BlockEx is ERC721{
             _price
         );
         //transfering the NFT for sale into the exchange contract from the seller
-        _transfer(msg.sender,address(this),_tokenId);
+        marketPlace.transferFrom(msg.sender,address(this),_tokenId);
 
         emit ListedForSale(
             _tokenId,
@@ -160,9 +161,9 @@ contract BlockEx is ERC721{
 
 
         //transferring the NFT from the exchange to the buyer address
-        _transfer(address(this),msg.sender,_tokenId);
+        marketPlace.transferFrom(address(this),msg.sender,_tokenId);
         //approving the contract to spend the this NFT on behalf of the buyer for the future resell or trades like that
-        approve(address(this),_tokenId);
+        marketPlace.approve(address(this),_tokenId);
 
         //paying the owner of the contract a trading fee for the transaction
         payable(owner).transfer(tradeFee);
