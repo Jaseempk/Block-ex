@@ -31,13 +31,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
 
 
-    uint256 public constant PRICE=0.01 ether;
+    uint256 public constant PRICE=0.009 ether;
     uint256[] public tokenCounters;
     bool public mintFinished=false;
 
     //mapping
     mapping(uint256 => bool)public tokenIdExists;
-    mapping(uint256 => address)tokenIdToAdress;
+    mapping(uint256 => address)tokenIdToAddress;
 
     //modifiers
     modifier canMint{
@@ -65,14 +65,20 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
         }
     }
 
-    function purchase(uint256 _tokenId)external payable {
+    function purchase(uint256 _tokenId,address _buyer)external payable {
         require(msg.value>=PRICE,"insufficient purchase amount");
         require(tokenIdExists[_tokenId],"NFT with this tokenId doesn't exist");
 
-        tokenIdToAdress[_tokenId]=tx.origin;
-        (bool sent,)=payable(tx.origin).call{value:msg.value}("");
+        tokenIdToAddress[_tokenId]=_buyer;
+        (bool sent,)=payable(msg.sender).call{value:msg.value}("");
         require(sent,"transfer failed");
-        _transfer(address(this),tx.origin,_tokenId);
+        /**
+         * 
+        approve(msg.sender,_tokenId);
+        transferFrom(address(this),_buyer,_tokenId);
+         * 
+         */
+        _transfer(address(this),_buyer,_tokenId);
     }
 
     function available(uint256 _tokenId)public view returns(bool){
@@ -87,7 +93,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
         return tokenCounters[tokenIndex];
     }
     function getTokenOwner(uint256 _tokenId)external view returns(address){
-        return tokenIdToAdress[_tokenId];
+        return tokenIdToAddress[_tokenId];
     }
     function getNumNFTs()public view returns(uint256){
         return tokenCounters.length;

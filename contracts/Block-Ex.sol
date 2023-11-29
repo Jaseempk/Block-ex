@@ -31,7 +31,7 @@ interface IFakeNFTMarketPlace{
     function getPrice()external pure returns(uint256);
     function getNumNFTs()external pure returns(uint256);
     function getTokenOwner(uint256 _tokenId)external view returns(address);
-    function purchase(uint256 _tokenId)external payable;
+    function purchase(uint256 _tokenId,address _buyer)external payable;
 }
 
 contract BlockEx is ERC721{
@@ -48,7 +48,7 @@ contract BlockEx is ERC721{
     IFakeNFTMarketPlace marketPlace;
     
     address public owner;
-    uint256 public constant tradeFee=0.009 ether;
+    uint256 public constant tradeFee=0.001 ether;
     uint256 public purchaseCount;
 
     //mapping
@@ -73,8 +73,8 @@ contract BlockEx is ERC721{
         uint256 initialPurchaseAmt=marketPlace.getPrice();
 
         require(msg.value>=initialPurchaseAmt,"insufficient purchase amount");
-        require(marketPlace.available(_tokenId),"NFT doesn't exist");
-        marketPlace.purchase{value:initialPurchaseAmt}(_tokenId);
+        require(marketPlace.available(_tokenId),"NFT _tokenId doesn't exist");
+        marketPlace.purchase{value:initialPurchaseAmt}(_tokenId,msg.sender);
         purchaseCount+=1;
 
         emit InitialNFTPurchaseDone(msg.sender,_tokenId);
@@ -118,7 +118,8 @@ contract BlockEx is ERC721{
 
         for(uint i=0;i<=purchaseCount;i++){
             currentId=i+1;
-            txnDatas[currentIndex]=idToData[currentId];
+            TxnData storage currentItem = idToData[currentId];
+            txnDatas[currentIndex]=currentItem;
             currentIndex+=1;
         }
 
@@ -139,8 +140,10 @@ contract BlockEx is ERC721{
         for(uint i=0;i<=purchaseCount;i++){
             if(idToData[i+1].seller==msg.sender || idToData[i+1].owner==msg.sender){
                 currentId=i+1;
+                TxnData storage currentItem = idToData[currentId];
+
                 //NFTs owned by the msg.sender
-                myNFTs[currentIndex]=idToData[currentId];
+                myNFTs[currentIndex]=currentItem;
             }
         }
         return myNFTs;
@@ -168,6 +171,10 @@ contract BlockEx is ERC721{
         payable(seller).transfer(msg.value);
 
 
+    }
+
+    function getPurchaseCount()public view returns(uint256){
+        return purchaseCount;
     }
     receive() external payable {}
 
