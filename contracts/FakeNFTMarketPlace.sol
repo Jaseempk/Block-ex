@@ -1,3 +1,25 @@
+// Layout of Contract:
+// version
+// imports
+// errors
+// interfaces, libraries, contracts
+// Type declarations
+// State variables
+// Events
+// Modifiers
+// Functions
+
+// Layout of Functions:
+// constructor
+// receive function (if exists)
+// fallback function (if exists)
+// external
+// public
+// internal
+// private
+// internal & private view & pure functions
+// external & public view & pure functions
+
 //SPDX-License-Identifier:MIT
 
 
@@ -35,7 +57,7 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
             mintFinished=true;
 
             //mints NFT to this contract from which users can later purchase
-            _safeMint(address(this),tokenId);
+            _mint(address(this),tokenId);
 
             tokenIdExists[tokenId]=true;
             //sets URI in the given tokenId's metadata
@@ -47,10 +69,10 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
         require(msg.value>=PRICE,"insufficient purchase amount");
         require(tokenIdExists[_tokenId],"NFT with this tokenId doesn't exist");
 
-        tokenIdToAdress[_tokenId]=msg.sender;
-        (bool sent,)=payable(msg.sender).call{value:msg.value}("");
+        tokenIdToAdress[_tokenId]=tx.origin;
+        (bool sent,)=payable(tx.origin).call{value:msg.value}("");
         require(sent,"transfer failed");
-        _safeTransfer(address(this),msg.sender,_tokenId,"");
+        _transfer(address(this),tx.origin,_tokenId);
     }
 
     function available(uint256 _tokenId)public view returns(bool){

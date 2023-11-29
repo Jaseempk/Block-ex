@@ -6,24 +6,24 @@ async function sleep(ms) {
 
 async function main() {
     const fakeNFTMarket = await hre.ethers.deployContract("FakeNFTMarketPlace");
-    await fakeNFTMarket.deployed();
-    console.log("FakeNFTMarketPlace deployed at:", fakeNFTMarket.address);
+    await fakeNFTMarket.waitForDeployment();
+    console.log("FakeNFTMarketPlace deployed at:", fakeNFTMarket.target);
 
-    const blockEx = await hre.ethers.deployContract("BlockEx", [fakeNFTMarket.address]);
-    await blockEx.deployed();
-    console.log("Block-Ex deployed at:", blockEx.address);
+    const blockEx = await hre.ethers.deployContract("BlockEx", [fakeNFTMarket.target]);
+    await blockEx.waitForDeployment();
+    console.log("Block-Ex deployed at:", blockEx.target);
 
-    await sleep(5000);
+    await sleep(11000);
 
     // verifying contracts
     await hre.run("verify:verify", {
-        address: fakeNFTMarket.address,
+        address: fakeNFTMarket.target,
         constructorArguments: [],
     });
 
     await hre.run("verify:verify", {
-        address: blockEx.address,
-        constructorArguments: [fakeNFTMarket.address],
+        address: blockEx.target,
+        constructorArguments: [fakeNFTMarket.target],
     });
 }
 

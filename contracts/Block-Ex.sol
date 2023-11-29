@@ -169,5 +169,6 @@ contract BlockEx is ERC721{
 
 
     }
+    receive() external payable {}
 
 }
