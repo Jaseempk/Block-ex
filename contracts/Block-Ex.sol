@@ -20,6 +20,11 @@
 // internal & private view & pure functions
 // external & public view & pure functions
 
+/**
+ * import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/access/Ownable.sol";
+   import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+ */
+
 //SPDX-License-Identifier:MIT
 
 pragma solidity ^0.8.19;
@@ -70,15 +75,15 @@ contract BlockEx {
         owner=payable(msg.sender);
     }
 
-    function initialPurchase(uint256 _tokenId)public payable{
+    function initialPurchase(uint256 __tokenId)public payable{
         uint256 initialPurchaseAmt=marketPlace.getPrice();
 
         require(msg.value>=initialPurchaseAmt,"insufficient purchase amount");
-        require(marketPlace.available(_tokenId),"NFT _tokenId doesn't exist");
-        marketPlace.purchase{value:initialPurchaseAmt}(_tokenId,msg.sender);
+        require(marketPlace.available(__tokenId),"NFT _tokenId doesn't exist");
+        marketPlace.purchase{value:initialPurchaseAmt}(__tokenId,msg.sender);
         purchaseCount+=1;
 
-        emit InitialNFTPurchaseDone(msg.sender,_tokenId);
+        emit InitialNFTPurchaseDone(msg.sender,__tokenId);
     }
 
     function listingForSale(uint256 _tokenId,uint256 _price)external payable {
