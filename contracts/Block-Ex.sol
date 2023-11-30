@@ -75,15 +75,15 @@ contract BlockEx {
         owner=payable(msg.sender);
     }
 
-    function initialPurchase(uint256 __tokenId)public payable{
+    function initialPurchase(uint256 _tokenID)public payable{
         uint256 initialPurchaseAmt=marketPlace.getPrice();
 
         require(msg.value>=initialPurchaseAmt,"insufficient purchase amount");
-        require(marketPlace.available(__tokenId),"NFT _tokenId doesn't exist");
-        marketPlace.purchase{value:initialPurchaseAmt}(__tokenId,msg.sender);
+        require(marketPlace.available(_tokenID),"NFT _tokenId doesn't exist");
+        marketPlace.purchase{value:initialPurchaseAmt}(_tokenID,msg.sender);
         purchaseCount+=1;
 
-        emit InitialNFTPurchaseDone(msg.sender,__tokenId);
+        emit InitialNFTPurchaseDone(msg.sender,_tokenID);
     }
 
     function listingForSale(uint256 _tokenId,uint256 _price)external payable {
@@ -122,7 +122,7 @@ contract BlockEx {
         uint256 currentId;
         uint256 currentIndex=0;
 
-        for(uint i=0;i<=purchaseCount;i++){
+        for(uint i=0;i<purchaseCount;i++){
             currentId=i+1;
             TxnData storage currentItem = idToData[currentId];
             txnDatas[currentIndex]=currentItem;
@@ -167,8 +167,6 @@ contract BlockEx {
 
         //transferring the NFT from the exchange to the buyer address
         marketPlace.transferFrom(address(this),msg.sender,_tokenId);
-        //approving the contract to spend the this NFT on behalf of the buyer for the future resell or trades like that
-        marketPlace.approve(address(this),_tokenId);
 
         //paying the owner of the contract a trading fee for the transaction
         payable(owner).transfer(tradeFee);

@@ -52,13 +52,13 @@ contract FakeNFTMarketPlace is ERC721Enumerable,Ownable{
     function mintNFT(uint256 numTokens)public onlyOwner canMint{
         for(uint i=0;i<=numTokens;i++){
 
-            uint256 tokenID=tokenCounters.length;
+            uint256 tokenID=tokenCounters.length+1;
             tokenCounters.push(tokenID);
             mintFinished=true;
 
             //mints NFT to this contract from which users can later purchase
             _mint(address(this),tokenID);
-            
+
             tokenIdExists[tokenID]=true;
 
             //sets URI in the given tokenId's metadata
